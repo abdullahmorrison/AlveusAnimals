@@ -27,19 +27,25 @@ const arrowPathClass =
   "[&_path]:stroke-alveus-tan [&_path]:stroke-[0.25rem] [&_path]:[paint-order:stroke] [&_path]:transition-[stroke] [&_path]:group-hover:stroke-highlight [&_path]:group-hover:stroke-[0.375rem] [&_path]:group-focus:stroke-highlight [&_path]:group-focus:stroke-[0.375rem]";
 const hiddenClass = "opacity-0 pointer-events-none";
 
-export default function Ambassadors(props: OverlayOptionProps) {
+type AmbassadorsProps = OverlayOptionProps & { plants?: boolean };
+
+export default function Ambassadors(props: AmbassadorsProps) {
   const {
     context: { activeAmbassador, setActiveAmbassador },
     className,
+    plants = false,
   } = props;
 
   const rawAmbassadors = useAmbassadors();
   const ambassadors = useMemo(
     () =>
-      typeSafeObjectEntries(rawAmbassadors ?? {}).sort(([, a], [, b]) =>
-        sortDate(a.arrival, b.arrival),
-      ),
-    [rawAmbassadors],
+      typeSafeObjectEntries(rawAmbassadors ?? {})
+        .filter(
+          ([, ambassador]) =>
+            (ambassador.species.class.name === "plantae") === plants,
+        )
+        .sort(([, a], [, b]) => sortDate(a.arrival, b.arrival)),
+    [rawAmbassadors, plants],
   );
 
   const upArrowRef = useRef<HTMLButtonElement>(null);
@@ -87,24 +93,27 @@ export default function Ambassadors(props: OverlayOptionProps) {
     if (ambassadorList.current) {
       if (ambassadorList.current.scrollTop === 0)
         upArrowRef.current?.classList.add(...hiddenClass.split(" "));
-      else if (
+      else upArrowRef.current?.classList.remove(...hiddenClass.split(" "));
+
+      if (
         ambassadorList.current.scrollTop +
-          ambassadorList.current.clientHeight ===
+          ambassadorList.current.clientHeight >=
         ambassadorList.current.scrollHeight
       )
         downArrowRef.current?.classList.add(...hiddenClass.split(" "));
-      else {
-        upArrowRef.current?.classList.remove(...hiddenClass.split(" "));
-        downArrowRef.current?.classList.remove(...hiddenClass.split(" "));
-      }
+      else downArrowRef.current?.classList.remove(...hiddenClass.split(" "));
     }
   }, []);
 
-  // Check the arrow visibility on mount
-  // Sometimes browsers restore odd scroll positions
+  // Check the arrow visibility on mount, as browsers restore odd scroll positions
+  // Also, check it whenever the ambassador list changes as the list may change size
   useEffect(() => {
     handleArrowVisibility();
-  }, [handleArrowVisibility]);
+
+    // If the window is resized, check the arrow visibility again
+    window.addEventListener("resize", handleArrowVisibility);
+    return () => window.removeEventListener("resize", handleArrowVisibility);
+  }, [handleArrowVisibility, ambassadors]);
 
   return (
     <div

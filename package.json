@@ -30,7 +30,7 @@
     "types": "tsc --noEmit"
   },
   "dependencies": {
-    "@alveusgg/data": "0.54.1",
+    "@alveusgg/data": "0.55.0",
     "@headlessui/react": "^2.2.0",
     "react": "^19.0.0",
     "react-canvas-confetti": "^2.0.7",

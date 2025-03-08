@@ -7,17 +7,13 @@ import { useAmbassadors } from "../../../hooks/useAmbassadors";
 
 import useChatCommand from "../../../hooks/useChatCommand";
 import { typeSafeObjectEntries } from "../../../utils/helpers";
-import { sortDate } from "../../../utils/dateManager";
 
 import Overlay from "./Overlay";
 
 export default function Ambassadors() {
   const rawAmbassadors = useAmbassadors();
   const ambassadors = useMemo(
-    () =>
-      typeSafeObjectEntries(rawAmbassadors ?? {}).sort(([, a], [, b]) =>
-        sortDate(a.arrival, b.arrival),
-      ),
+    () => typeSafeObjectEntries(rawAmbassadors ?? {}),
     [rawAmbassadors],
   );
 

@@ -16,9 +16,16 @@ import partyHat from "../assets/party.svg";
 
 const headingClass = "text-base text-alveus-green-400";
 
-const offsetPosition = (position?: string) => {
-  const [x, y] = (position || "50% 50%").split(" ");
-  return `${x} min(calc(${y} + 1.5rem), 0%)`;
+const offsetPosition = (position?: `${number}% ${number}%`) => {
+  const [x, y] = (position || "50% 50%").split(" ") as [
+    `${number}%`,
+    `${number}%`,
+  ];
+
+  const yPct = Number(y.replace("%", ""));
+  if (yPct <= 50) return `${x} min(calc(${y} + 1.5rem), 0%)`;
+
+  return `${x} ${y}`;
 };
 
 const stringifyLifespan = (value: number | { min: number; max: number }) => {

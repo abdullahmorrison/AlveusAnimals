@@ -4,14 +4,14 @@ import Tooltip from "../../../components/Tooltip";
 
 import { classes } from "../../../utils/classes";
 
-type ButtonsOptions = Readonly<
-  {
-    key: string;
-    type: "primary" | "secondary";
-    icon: (props: { size: number; className?: string }) => JSX.Element;
-    title: string;
-  }[]
->;
+export interface ButtonsOption {
+  key: string;
+  type: "primary" | "secondary";
+  icon: (props: { size: number; className?: string }) => JSX.Element;
+  title: string;
+}
+
+type ButtonsOptions = Readonly<ButtonsOption[]>;
 
 interface ButtonsProps<T extends ButtonsOptions> {
   options: T;
